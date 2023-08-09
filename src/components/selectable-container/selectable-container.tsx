@@ -1,4 +1,4 @@
-import { FC, FocusEventHandler } from "react";
+import { FC, FocusEventHandler } from 'react';
 
 export interface SelectableContainerProps extends React.HTMLProps<HTMLDivElement> {
   onSelect?(): void;

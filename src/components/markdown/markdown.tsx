@@ -1,5 +1,5 @@
-import { FC } from "react";
-import MarkdownBase, { MarkdownToJSX } from "markdown-to-jsx";
+import { FC } from 'react';
+import MarkdownBase, { MarkdownToJSX } from 'markdown-to-jsx';
 
 export interface MarkdownProps {
   id?: string;
