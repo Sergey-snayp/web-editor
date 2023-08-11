@@ -1,16 +1,18 @@
 import { FC } from 'react';
 
-import { TElements } from '../../interfaces/Elements';
+import { IColumn, TElements } from '../../interfaces/Elements';
 import { Icons } from '../icons';
 import { GridDataBuilder } from '../../services/GridDataBuilder';
 import { ElementType, ContentType } from '../../interfaces/Elements';
 
-type TUpdateConfig = (func: any, coordinates: number[], data?: Partial<TElements>) => void;
-
 export interface IControlPanel {
   currentSelectedElement?: TElements;
   gridDataBuilder: GridDataBuilder;
-  updateConfig: TUpdateConfig;
+  dataManagement: {
+    handleAddRow: () => void;
+    handleAddColumn: (coordinators: number[]) => void;
+    handleUpdateColumn: (coordinates: number[], data: Partial<IColumn>) => void;
+  };
   coordinates: number[];
 }
 
@@ -27,7 +29,8 @@ interface IControlPanelMap {
 }
 
 export const ControlPanel: FC<IControlPanel> = (props) => {
-  const { currentSelectedElement, gridDataBuilder, updateConfig, coordinates } = props;
+  const { currentSelectedElement, gridDataBuilder, dataManagement, coordinates } = props;
+  const { handleUpdateColumn, handleAddColumn, handleAddRow } = dataManagement;
 
   const controlPanelMap: IControlPanelMap[] = [
     {
@@ -37,7 +40,7 @@ export const ControlPanel: FC<IControlPanel> = (props) => {
           <div className="actions">
             <button
               className="action"
-              onClick={() => updateConfig(gridDataBuilder.addRow, coordinates)}
+              onClick={() => handleAddRow()}
             >
               Add row
             </button>
@@ -56,7 +59,7 @@ export const ControlPanel: FC<IControlPanel> = (props) => {
           <div className="actions">
             <button
               className="action"
-              onClick={()=>updateConfig(gridDataBuilder.addColumn, coordinates)}
+              onClick={()=> handleAddColumn(coordinates)}
             >
               Add column
             </button>
@@ -83,7 +86,7 @@ export const ControlPanel: FC<IControlPanel> = (props) => {
                     ? 'selected'
                     : undefined
                 }
-                onClick={() => updateConfig(gridDataBuilder.updateColumn, coordinates, { contentType: 'text' })}
+                onClick={() => handleUpdateColumn(coordinates, { contentType: 'text' })}
               >
                 <Icons.Text />
               </button>
@@ -93,7 +96,7 @@ export const ControlPanel: FC<IControlPanel> = (props) => {
                     ? 'selected'
                     : undefined
                 }
-                onClick={() => updateConfig(gridDataBuilder.updateColumn, coordinates, { contentType: 'image' })}
+                onClick={() => handleUpdateColumn(coordinates, { contentType: 'image' })}
               >
                 <Icons.Image />
               </button>
@@ -122,7 +125,7 @@ export const ControlPanel: FC<IControlPanel> = (props) => {
                     ? 'selected'
                     : undefined
                 }
-                onClick={() => updateConfig(gridDataBuilder.updateColumn, coordinates, { alignment: 'left' })}
+                onClick={() => handleUpdateColumn(coordinates, { alignment: 'left' })}
               >
                 <Icons.TextAlignLeft />
               </button>
@@ -132,7 +135,7 @@ export const ControlPanel: FC<IControlPanel> = (props) => {
                     ? 'selected'
                     : undefined
                 }
-                onClick={() => updateConfig(gridDataBuilder.updateColumn, coordinates, { alignment: 'center' })}
+                onClick={() => handleUpdateColumn(coordinates, { alignment: 'center' })}
               >
                 <Icons.TextAlignCenter />
               </button>
@@ -142,7 +145,7 @@ export const ControlPanel: FC<IControlPanel> = (props) => {
                     ? 'selected'
                     : undefined
                 }
-                onClick={() => updateConfig(gridDataBuilder.updateColumn, coordinates, { alignment: 'right' })}
+                onClick={() => handleUpdateColumn(coordinates, { alignment: 'right' })}
               >
                 <Icons.TextAlignRight />
               </button>
@@ -154,7 +157,7 @@ export const ControlPanel: FC<IControlPanel> = (props) => {
               placeholder="Enter text"
               value={currentSelectedElement?.elementType === 'column' ? currentSelectedElement.textContent : ''}
               onChange={(event) =>
-                updateConfig(gridDataBuilder.updateColumn, coordinates, { textContent: event.target.value })
+                handleUpdateColumn(coordinates, { textContent: event.target.value })
               }
             ></textarea>
           </div>
@@ -181,7 +184,7 @@ export const ControlPanel: FC<IControlPanel> = (props) => {
               type="text"
               value={currentSelectedElement?.elementType === 'column' ? currentSelectedElement.imageSource : ''}
               onChange={(event) =>
-                updateConfig(gridDataBuilder.updateColumn, coordinates, { imageSource: event.target.value })
+                handleUpdateColumn(coordinates, { imageSource: event.target.value })
               }
             />
           </div>

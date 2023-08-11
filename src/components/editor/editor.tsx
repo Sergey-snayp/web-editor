@@ -2,7 +2,7 @@ import { FC, useState, useRef } from 'react';
 
 import { Stage } from '../stage';
 import { GridDataBuilder } from '../../services/GridDataBuilder';
-import { TElements } from '../../interfaces/Elements';
+import { IColumn, TElements } from '../../interfaces/Elements';
 import { ControlPanel } from '../controlPanel';
 import { editorInitialValue } from '../../constants/others';
 import { findElementByCoordinates } from '../../helpers/elementHelpers';
@@ -28,25 +28,36 @@ export const Editor: FC = () => {
     setCoordinates(newCoordinates);
   };
 
-  const updateConfig = (func: any, coordinates: number[], data?: Partial<TElements>) => {
+  const handleAddRow = () => {
     if(config){
       const newConfig = Object.assign({}, config);
-      let selectedElement;
+      const selectedElement = findElementByCoordinates(newConfig, []);
 
-      if(func.name === 'addRow'){
-        selectedElement = findElementByCoordinates(newConfig, []);
-      }
-      if(func.name === 'addColumn'){
-        selectedElement = findElementByCoordinates(newConfig, coordinates);
-        if(selectedElement.elementType !== 'row') {
-          selectedElement = findElementByCoordinates(newConfig, coordinates, 'row');
-        }
-      }
-      if(func.name === 'updateColumn'){
-        selectedElement = findElementByCoordinates(newConfig, coordinates);
+      gridDataBuilder.addRow(selectedElement);
+      setConfig(newConfig);
+    }
+  };
+
+  const handleAddColumn = (coordinates: number[]) => {
+    if(config){
+      const newConfig = Object.assign({}, config);
+      let selectedElement = findElementByCoordinates(newConfig, coordinates);
+
+      if(selectedElement.elementType !== 'row') {
+        selectedElement = findElementByCoordinates(newConfig, coordinates, 'row');
       }
 
-      func(selectedElement, data);
+      gridDataBuilder.addColumn(selectedElement);
+      setConfig(newConfig);
+    }
+  };
+
+  const handleUpdateColumn = (coordinates: number[], data: Partial<IColumn>) => {
+    if(config){
+      const newConfig = Object.assign({}, config);
+      const selectedElement = findElementByCoordinates(newConfig, coordinates);
+
+      gridDataBuilder.updateColumn(selectedElement, data);
       setConfig(newConfig);
     }
   };
@@ -63,7 +74,7 @@ export const Editor: FC = () => {
       <ControlPanel
         currentSelectedElement={currentSelectedElement.current}
         coordinates={coordinates}
-        updateConfig={updateConfig}
+        dataManagement={{ handleAddRow, handleAddColumn, handleUpdateColumn }}
         gridDataBuilder={gridDataBuilder}/>
     </div>
   );

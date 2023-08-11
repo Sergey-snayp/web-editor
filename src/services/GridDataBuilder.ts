@@ -31,7 +31,7 @@ export class GridDataBuilder {
     }
   }
 
-  updateColumn(element: TElements, data?: Partial<IColumn>) {
+  updateColumn(element: TElements, data: Partial<IColumn>) {
     if (element.elementType === 'column' && data) {
       element.contentType = data.contentType || element.contentType;
       element.textContent = data.textContent || element.textContent;
