@@ -10,7 +10,6 @@ import { findElementByCoordinates } from '../../helpers/elementHelpers';
 
 export const Editor: FC = () => {
   const [config, setConfig] = useState<TElements>(editorInitialValue);
-
   const [coordinates, setCoordinates] = useState<number[]>([]);
   const currentSelectedElement = useRef<TElements>();
   const gridDataBuilder = new GridDataBuilder(config);
@@ -19,47 +18,40 @@ export const Editor: FC = () => {
     if (currentSelectedElement.current) {
       currentSelectedElement.current.isSelected = false;
     }
-    if (config) {
-      const newElement = findElementByCoordinates(config, newCoordinates);
-      currentSelectedElement.current = newElement;
-      newElement.isSelected = true;
-    }
+
+    const newElement = findElementByCoordinates(config, newCoordinates);
+    currentSelectedElement.current = newElement;
+    newElement.isSelected = true;
 
     setCoordinates(newCoordinates);
   };
 
   const handleAddRow = () => {
-    if(config){
-      const newConfig = Object.assign({}, config);
-      const selectedElement = findElementByCoordinates(newConfig, []);
+    const newConfig = Object.assign({}, config);
+    const selectedElement = findElementByCoordinates(newConfig, []);
 
-      gridDataBuilder.addRow(selectedElement);
-      setConfig(newConfig);
-    }
+    gridDataBuilder.addRow(selectedElement);
+    setConfig(newConfig);
   };
 
   const handleAddColumn = (coordinates: number[]) => {
-    if(config){
-      const newConfig = Object.assign({}, config);
-      let selectedElement = findElementByCoordinates(newConfig, coordinates);
+    const newConfig = Object.assign({}, config);
+    let selectedElement = findElementByCoordinates(newConfig, coordinates);
 
-      if(selectedElement.elementType !== 'row') {
-        selectedElement = findElementByCoordinates(newConfig, coordinates, 'row');
-      }
-
-      gridDataBuilder.addColumn(selectedElement);
-      setConfig(newConfig);
+    if(selectedElement.elementType !== 'row') {
+      selectedElement = findElementByCoordinates(newConfig, coordinates, 'row');
     }
+
+    gridDataBuilder.addColumn(selectedElement);
+    setConfig(newConfig);
   };
 
   const handleUpdateColumn = (coordinates: number[], data: Partial<IColumn>) => {
-    if(config){
-      const newConfig = Object.assign({}, config);
-      const selectedElement = findElementByCoordinates(newConfig, coordinates);
+    const newConfig = Object.assign({}, config);
+    const selectedElement = findElementByCoordinates(newConfig, coordinates);
 
-      gridDataBuilder.updateColumn(selectedElement, data);
-      setConfig(newConfig);
-    }
+    gridDataBuilder.updateColumn(selectedElement, data);
+    setConfig(newConfig);
   };
 
   return (
